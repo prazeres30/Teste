@@ -11,15 +11,14 @@ from io import BytesIO
 st.set_page_config(page_title="OCR em Lote", layout="centered")
 st.title("🧠 OCR em Arquivos - Conversão em Lote para PDF com Texto")
 
-# Passo 1: Selecionar pasta local com arquivos
-input_path = st.text_input("📂 Digite o caminho da pasta com os arquivos a serem processados:")
+input_path = st.text_input("📂 Digite o caminho da pasta com os arquivos (em ambiente Docker):", value="./input")
 
 if input_path and os.path.isdir(input_path):
     files = list(Path(input_path).glob("*"))
-    st.success(f"✅ {len(files)} arquivos encontrados na pasta.")
-    
+    st.success(f"✅ {len(files)} arquivos encontrados.")
+
     if st.button("🚀 Iniciar conversão com OCR"):
-        output_dir = Path("arquivos convertidos")
+        output_dir = Path("arquivos_convertidos")
         shutil.rmtree(output_dir, ignore_errors=True)
         output_dir.mkdir(exist_ok=True)
 
@@ -48,17 +47,15 @@ if input_path and os.path.isdir(input_path):
             except Exception as e:
                 st.error(f"Erro ao processar {file.name}: {e}")
 
-        # Zipar os arquivos convertidos
         zip_path = "arquivos_convertidos.zip"
         with zipfile.ZipFile(zip_path, "w") as zipf:
             for file in output_dir.glob("*.pdf"):
                 zipf.write(file, arcname=file.name)
 
-        # Exibir botão de download
         with open(zip_path, "rb") as f:
             st.success("✅ Conversão concluída!")
             st.download_button("📦 Baixar arquivos convertidos (ZIP)", data=f, file_name="arquivos_convertidos.zip", mime="application/zip")
 
 else:
     if input_path:
-        st.error("❌ Caminho inválido. Verifique se a pasta existe.")
+        st.error("❌ Caminho inválido.")
