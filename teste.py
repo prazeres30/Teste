@@ -63,3 +63,19 @@ if uploaded_file:
         st.success(f"✅ Download concluído: {success} arquivos baixados.")
         if fail > 0:
             st.warning(f"⚠️ {fail} arquivos falharam.")
+# Compactar os arquivos baixados
+        zip_path = "arquivos_baixados.zip"
+        with open(zip_path, "wb") as f:
+            with zipfile.ZipFile(f, mode="w") as archive:
+                for file_name in os.listdir("arquivos brutos"):
+                    file_path = os.path.join("arquivos brutos", file_name)
+                    archive.write(file_path, arcname=file_name)
+
+        # Exibir botão para download
+        with open(zip_path, "rb") as f:
+            st.download_button(
+                label="📦 Baixar arquivos zipados",
+                data=f,
+                file_name="arquivos_baixados.zip",
+                mime="application/zip"
+            )
