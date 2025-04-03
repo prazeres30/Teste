@@ -3,6 +3,7 @@ import pandas as pd
 import os
 import requests
 import shutil
+import zipfile
 
 st.set_page_config(page_title="Baixar Arquivos de Planilha", layout="centered")
 
@@ -63,13 +64,13 @@ if uploaded_file:
         st.success(f"✅ Download concluído: {success} arquivos baixados.")
         if fail > 0:
             st.warning(f"⚠️ {fail} arquivos falharam.")
-# Compactar os arquivos baixados
+
+        # Compactar os arquivos baixados em um zip
         zip_path = "arquivos_baixados.zip"
-        with open(zip_path, "wb") as f:
-            with zipfile.ZipFile(f, mode="w") as archive:
-                for file_name in os.listdir("arquivos brutos"):
-                    file_path = os.path.join("arquivos brutos", file_name)
-                    archive.write(file_path, arcname=file_name)
+        with zipfile.ZipFile(zip_path, mode="w") as archive:
+            for file_name in os.listdir("arquivos brutos"):
+                file_path = os.path.join("arquivos brutos", file_name)
+                archive.write(file_path, arcname=file_name)
 
         # Exibir botão para download
         with open(zip_path, "rb") as f:
